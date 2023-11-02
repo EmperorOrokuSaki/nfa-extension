@@ -2,7 +2,7 @@
   "name": "Non-Fungible Apps",
   "version": "1.0",
   "description": "WIP!",
-  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "permissions": ["notifications", "activeTab", "scripting", "storage", "tabs"],
   "options_page": "options.html",
   "background": {
     "service_worker": "service-worker.js"
