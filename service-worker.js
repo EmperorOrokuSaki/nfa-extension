@@ -1,42 +1,56 @@
-import { initPrisma, prisma } from './util/prismaHelper.js';
-//importScripts('util/prismaHelper.js');
+//import { initPrisma, prisma } from './util/prismaHelper.js';
 
+const mapping = {
+  'fleek.xyz': 'bafybeidtfkjek5emzjrzw6c4vtgwkfggfgpfdniamq4g4stqasknhxwpea',
+  'ipfs.tech': 'bafybeibwirqleiponhf7v76j7uwl2ffpw7tjebmbyhxbfkw3etj5a6okjm',
+  'docs.ipfs.tech': 'bafybeiebkh7kbsyofwlat7c6klayu57mmpy6362dso7egunokp7t3ary6u'
+}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   let url = new URL(tab.url);
-  if (changeInfo.status == "complete") console.log("onUpdated:" + url);
+  if (changeInfo.status != "complete") return;
   if (url.protocol == "ipfs://") return;
-
-  initPrisma();
-
-  let urlLookup = prisma.tokens.findMany({
-    where: {
-      domain: url.hostname.replace('www', '')
-    }
-  });
-
-  if (urlLookup.length > 0) {
-    chrome.notifications.create('notificationID', {
+  
+  console.log(url.hostname);
+  
+  if(mapping[url.hostname] !== undefined) {
+    chrome.notifications.create(mapping[url.hostname], {
       type: 'basic',
       iconUrl: './images/icon-16.png',
       title: 'This domain is associated with an NFA.',
-      message: 'Do you want to open the safe version?',
+      message: 'Click here to open the safe version!',
       priority: 2,
-      buttons: [{
-        title: "Yes",
-        // iconUrl: "./images/icon-16.png"
-      }]
     });
   }
 
 
-  
+  // initPrisma();
+
+  // let urlLookup = prisma.tokens.findMany({
+  //   where: {
+  //     domain: url.hostname.replace('www', '')
+  //   }
+  // });
+
+  // if (urlLookup.length > 0) {
+  //   chrome.notifications.create('notificationID', {
+  //     type: 'basic',
+  //     iconUrl: './images/icon-16.png',
+  //     title: 'This domain is associated with an NFA.',
+  //     message: 'Do you want to open the safe version?',
+  //     priority: 2,
+  //     buttons: [{
+  //       title: "Yes",
+  //       // iconUrl: "./images/icon-16.png"
+  //     }]
+  //   });
+  // }
 });
 
 chrome.notifications.onClicked.addListener((notificationID) => {
 
   chrome.tabs.create({
-    url: 'https://ipfs.io/ipfs/bafybeiga3woa76vm6q3siktgpgxyxj2qe53tqtknjpahtpcwncanrujhkq',
+    url: 'https://ipfs.io/ipfs/'+notificationID,
     selected: true,
   })
 
